@@ -1,58 +1,74 @@
-title: "STEP TEMPLATE"
-summary: A short summary of the step. Don't make it too long ;)
-description: |-
-  This is a Step template.
-  Contains everything what's required for a valid Stepman managed step.
+#
+# A couple of useful guides & docs:
+#
+# - Main Bitrise CLI docs: https://github.com/bitrise-io/bitrise/tree/master/_docs
+# - Step Development Guideline: https://github.com/bitrise-io/bitrise/blob/master/_docs/step-development-guideline.md
+# - Bitrise.yml format spec: https://github.com/bitrise-io/bitrise/blob/master/_docs/bitrise-yml-format-spec.md
+# - Bitrise docs: http://devcenter.bitrise.io/
+# - Bitrise CLI guides: http://devcenter.bitrise.io/bitrise-cli/
 
-  A Step's description (and generally any `description` property)
-  can be a [Markdown](https://en.wikipedia.org/wiki/Markdown) formatted text.
+title: |-
+  "Get versionName and versionCode on Android KTS"
+summary: |
+  Extract the versionName and the versionCode on an Android project using a Gradle KTS task
+description: |
+  Extracts the version name and the version code from the Android project. It is useful if the versionName and versionCode values are defined somewhere else. Therefore, this step uses a Gradle KTS task to print these two values. It supports only KTS files.
 
-  To create your own Step:
-
-  1. Create a new repository on GitHub
-  2. Copy the files from this folder into your repository
-  3. That's all, you can use it on your own machine
-  4. Once you're happy with it you can share it with others.
-website: https://github.com/...
-source_code_url: https://github.com/...
-support_url: https://github.com/.../issues
+website: https://github.com/innovantic/bitrise-version-extractor-android-kts
+source_code_url: https://github.com/innovantic/bitrise-version-extractor-android-kts
+support_url: https://github.com/innovantic/bitrise-version-extractor-android-kts/issues
 host_os_tags:
   - osx-10.10
+  - ubuntu-16.04
+
 project_type_tags:
-  - ios
   - android
-  - xamarin
+  - react-native
+  - cordova
+  - ionic
+  - flutter
+
 type_tags:
-  - script
+  - utility
+
 is_requires_admin_user: true
 is_always_run: false
 is_skippable: false
-deps:
-  brew:
-  - name: git
-  - name: wget
-  apt_get:
-  - name: git
-  - name: wget
 run_if: ""
+
 inputs:
-  - example_step_input: Default Value - you can leave this empty if you want to
+  - build_gradle_path: $BITRISE_SOURCE_DIR/app/build.gradle.kts
     opts:
-      title: "Example Step Input"
-      summary: Summary. No more than 2-3 sentences.
-      description: |
-        Description of this input.
-
-        Can be Markdown formatted text.
-      is_expand: true
       is_required: true
-      value_options: []
-outputs:
-  - EXAMPLE_STEP_OUTPUT:
+      title: Path to the build.gradle.kts file
+      summary: Path to the app's build.gradle.kts file where the versionCode and versionName are defined.
+  - gradlew_path: "./gradlew"
     opts:
-      title: "Example Step Output"
-      summary: Summary. No more than 2-3 sentences.
+      category: Config
       description: |
-        Description of this output.
+        Using a Gradle Wrapper (gradlew) is required, as the wrapper ensures
+        that the right Gradle version is installed and used for the build.
+        You can find more information about the Gradle Wrapper (gradlew),
+        and about how you can generate one
+        in the official guide at: [https://docs.gradle.org/current/userguide/gradle_wrapper.html](https://docs.gradle.org/current/userguide/gradle_wrapper.html).
+        **The path should be relative** to the repository root. For example, `./gradlew`,
+        or if it is in a sub directory, `./sub/dir/gradlew`.
+      is_required: true
+      title: gradlew file path
+  - variant: ""
+    opts:
+      is_required: false
+      title: Build variant
+      summary: Set a custom variant, in case you need to print the version name and version code for a specific build.
+      description: |
+        Define a build variant if you need get a specific version defined in a flavor, for example: `Flavor1Debug`. If it is not defined, by default extracts the version from the `defaultConfig` section in the `build.gradle.kts` file.
 
-        Can be Markdown formatted text.
+outputs:
+  - EXTRACTED_ANDROID_VERSION_NAME: null
+    opts:
+      title: "Extracted versionName value"
+      summary: The extracted versionName value usually located in the app's `build.gradle.kts` file.
+  - EXTRACTED_ANDROID_VERSION_CODE: null
+    opts:
+      title: "Extracted versionCode value"
+      summary: The extracted versionCode value located in the app's `build.gradle.kts` file.

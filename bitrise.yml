@@ -1,10 +1,13 @@
-format_version: 1.1.0
-default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+format_version: 1
+default_step_lib_source: https://github.com/innovantic/bitrise-version-extractor-android-kts.git
 
 app:
   envs:
-  # define these in your .bitrise.secrets.yml
-  - A_SECRET_PARAM: $A_SECRET_PARAM
+    # If you want to share this step into a StepLib
+    - BITRISE_STEP_ID: version-extractor-android-kts
+    - BITRISE_STEP_VERSION: "0.0.0"
+    - BITRISE_STEP_GIT_CLONE_URL: https://github.com/innovantic/bitrise-version-extractor-android-kts.git
+    - MY_STEPLIB_REPO_FORK_GIT_URL: git@github.com:innovantic/bitrise-version-extractor-android-kts.git
 
 workflows:
   test:
@@ -29,7 +32,7 @@ workflows:
           file if you would not specify another value.
         run_if: true
         inputs:
-        - example_step_input: Example Step Input's value
+        - gradlew_path: ./gradlew
 
 
   # ----------------------------------------------------------------
@@ -46,10 +49,10 @@ workflows:
   share-this-step:
     envs:
       # if you want to share this step into a StepLib
-      - MY_STEPLIB_REPO_FORK_GIT_URL:
-      - STEP_ID_IN_STEPLIB:
-      - STEP_GIT_VERION_TAG_TO_SHARE:
-      - STEP_GIT_CLONE_URL:
+      - MY_STEPLIB_REPO_FORK_GIT_URL: $MY_STEPLIB_REPO_FORK_GIT_URL
+      - STEP_ID_IN_STEPLIB: $BITRISE_STEP_ID
+      - STEP_GIT_VERION_TAG_TO_SHARE: $BITRISE_STEP_VERSION
+      - STEP_GIT_CLONE_URL: $BITRISE_STEP_GIT_CLONE_URL
     description: |-
       If this is the first time you try to share a Step you should
       first call: $ bitrise share
@@ -80,5 +83,5 @@ workflows:
             #!/bin/bash
             set -ex
             bitrise share start -c ${MY_STEPLIB_REPO_FORK_GIT_URL}
-            bitrise share create --stepid ${STEP_ID_IN_STEPLIB} --tag ${STEP_GIT_VERION_TAG_TO_SHARE} --git ${STEP_GIT_CLONE_URL}
+            bitrise share create --stepid ${BITRISE_STEP_ID} --tag ${BITRISE_STEP_VERSION} --git ${BITRISE_STEP_GIT_CLONE_URL}
             bitrise share finish
